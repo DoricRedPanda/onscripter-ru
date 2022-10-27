@@ -49,6 +49,7 @@
 #include <utility>
 #include <atomic>
 #include <array>
+#include <limits>
 #ifdef USE_STD_REGEX
 #include <regex>
 #endif

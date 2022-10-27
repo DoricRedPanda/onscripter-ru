@@ -184,7 +184,7 @@ void GPUController::setBlendMode(GPU_Image *image) {
 	// We perform these checks earlier
 	if (!image)
 		throw std::runtime_error("cannot set blend_mode for null image");
-	
+
 	if (blend_mode.empty())
 		throw std::runtime_error("cannot get anything from blend_mode");
 #endif
@@ -344,11 +344,14 @@ void GPUController::bindImageToSlot(GPU_Image *image, int slot_number) {
 	GPU_SetShaderImage(image, texLoc, slot_number);
 }
 
-void GPUController::enter3dMode() {
-	GPU_MatrixMode(GPU_MODELVIEW);
+void GPUController::enter3dMode(GPU_Target *target) {
+	GPU_MatrixMode(target, GPU_MODEL);
 	GPU_PushMatrix();
 	GPU_LoadIdentity();
-	GPU_MatrixMode(GPU_PROJECTION);
+	GPU_MatrixMode(target, GPU_VIEW);
+	GPU_PushMatrix();
+	GPU_LoadIdentity();
+	GPU_MatrixMode(target, GPU_PROJECTION);
 	GPU_PushMatrix();
 	GPU_LoadIdentity();
 
@@ -360,10 +363,12 @@ void GPUController::enter3dMode() {
 	GPU_Frustum(100, -100, 100, -100, -1, 0);
 }
 
-void GPUController::exit3dMode() {
-	GPU_MatrixMode(GPU_MODELVIEW);
+void GPUController::exit3dMode(GPU_Target *target) {
+	GPU_MatrixMode(target, GPU_MODEL);
 	GPU_PopMatrix();
-	GPU_MatrixMode(GPU_PROJECTION);
+	GPU_MatrixMode(target, GPU_VIEW);
+	GPU_PopMatrix();
+	GPU_MatrixMode(target, GPU_PROJECTION);
 	GPU_PopMatrix();
 }
 
@@ -1103,7 +1108,7 @@ void GPUController::glassSmashImage(GPU_Image *src, GPU_Target *target, int smas
 	// Regarding shine we probably want to draw it at gl_FragCoord coordinates when we have underlying
 	// triangle data. Z should be decreased proportionally to triangle z
 
-	enter3dMode();
+	enter3dMode(target);
 	setShaderProgram("glassSmash.frag");
 
 	// Looks somewhat right but it probably is not log in ps3
@@ -1153,7 +1158,7 @@ void GPUController::glassSmashImage(GPU_Image *src, GPU_Target *target, int smas
 
 	blitter.finish();
 	unsetShaderProgram();
-	exit3dMode();
+	exit3dMode(target);
 }
 
 PooledGPUImage GPUController::getGlassSmashedImage(GPUTransformableCanvasImage &im, int smashFactor) {

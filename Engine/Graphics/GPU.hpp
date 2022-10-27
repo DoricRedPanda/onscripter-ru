@@ -429,8 +429,8 @@ public:
 	void bindImageToSlot(GPU_Image *image, int slot_number);
 	void multiplyAlpha(GPU_Image *image, GPU_Rect *dst_clip = nullptr);
 	void mergeAlpha(GPU_Image *image, GPU_Rect *imageRect, GPU_Image *mask, GPU_Rect *maskRect, SDL_Surface *src);
-	void enter3dMode();
-	void exit3dMode();
+	void enter3dMode(GPU_Target *target);
+	void exit3dMode(GPU_Target *target);
 	void setShaderProgram(const char *programAlias);
 	void unsetShaderProgram();
 	int32_t getUniformLoc(const char *name);
